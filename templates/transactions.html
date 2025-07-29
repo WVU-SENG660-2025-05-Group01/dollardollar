@@ -122,6 +122,12 @@
             <div class="d-flex justify-content-between align-items-center">
                 <h2>All Transactions</h2>
                 <div>
+                    <a href="{{ url_for('suspicious_activity') }}" class="btn btn-warning me-2">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Suspicious Activity
+                        {% if suspicious_alerts and suspicious_alerts|length > 0 %}
+                            <span class="badge bg-danger">{{ suspicious_alerts|length }}</span>
+                        {% endif %}
+                    </a>
                     <button type="button" class="btn btn-success me-2" id="bulkCategorizeBtn">
                         <i class="fas fa-tags me-2"></i>Auto-Categorize
                     </button>
@@ -132,6 +138,12 @@
             </div>
         </div>
     </div>
+
+    {% if suspicious_alerts and suspicious_alerts|length > 0 %}
+    <div class="alert alert-warning">
+        <strong>Suspicious Activity Detected:</strong> {{ suspicious_alerts|length }} alert(s) found. <a href="{{ url_for('suspicious_activity') }}">View details</a>.
+    </div>
+    {% endif %}
     
     <!-- Filters Card -->
     <div class="card mb-4">

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Suspicious Activity Alerts</h2>
+{% if alerts %}
+  <ul class="list-group mb-4">
+    {% for alert in alerts %}
+      <li class="list-group-item">
+        <strong>{{ alert.type|replace('_', ' ')|capitalize }}:</strong> {{ alert.message }}
+        {% if alert.transaction %}
+          <br>
+          <small>Date: {{ alert.transaction.date }} | Amount: ${{ alert.transaction.amount }} | Description: {{ alert.transaction.description }}</small>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <div class="alert alert-success">No suspicious activity detected.</div>
+{% endif %}
+<a href="{{ url_for('transactions') }}" class="btn btn-primary">Back to Transactions</a>
+{% endblock %}

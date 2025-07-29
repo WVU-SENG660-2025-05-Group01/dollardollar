@@ -29,6 +29,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import func, or_, and_, inspect, text
 
 from recurring_detection import detect_recurring_transactions, create_recurring_expense_from_detection
+from suspicious_activity import detect_suspicious_activity
 from oidc_auth import setup_oidc_config, register_oidc_routes
 from oidc_user import extend_user_model
 from simplefin_client import SimpleFin
@@ -6513,9 +6514,9 @@ def set_default_currency():
 @app.route('/transactions')
 @login_required_dev
 @demo_time_limited
+
 def transactions():
-    """Display all transactions with filtering capabilities"""
-    # Fetch all expenses where the user is either the creator or a split participant
+    """Display all transactions with filtering capabilities and suspicious activity link"""
     base_currency = get_base_currency()
     expenses = Expense.query.filter(
         or_(
@@ -6523,69 +6524,41 @@ def transactions():
             Expense.split_with.like(f'%{current_user.id}%')
         )
     ).order_by(Expense.date.desc()).all()
-    
     users = User.query.all()
-    
-    # Pre-calculate all expense splits to avoid repeated calculations
-    expense_splits = {}
-    for expense in expenses:
-        expense_splits[expense.id] = expense.calculate_splits()
-    
-    # Calculate total expenses for current user (similar to dashboard calculation)
+    expense_splits = {expense.id: expense.calculate_splits() for expense in expenses}
     now = datetime.now()
     current_year = now.year
     total_expenses = 0
-
     for expense in expenses:
-        # Skip if not in current year
         if expense.date.year != current_year:
             continue
-            
         splits = expense_splits[expense.id]
-        
         if expense.paid_by == current_user.id:
-            # If user paid, add their own portion
             total_expenses += splits['payer']['amount']
-            
-            # Also add what others owe them (the entire expense)
             for split in splits['splits']:
                 total_expenses += split['amount']
         else:
-            # If someone else paid, add only this user's portion
             for split in splits['splits']:
                 if split['email'] == current_user.id:
                     total_expenses += split['amount']
                     break
-    
-    # Calculate current month total (similar to dashboard calculation)
     current_month_total = 0
     current_month = now.strftime('%Y-%m')
-
     for expense in expenses:
-        # Skip if not in current month
         if expense.date.strftime('%Y-%m') != current_month:
             continue
-            
         splits = expense_splits[expense.id]
-        
         if expense.paid_by == current_user.id:
-            # If user paid, add their own portion
             current_month_total += splits['payer']['amount']
-            
-            # Also add what others owe them (the entire expense)
             for split in splits['splits']:
                 current_month_total += split['amount']
         else:
-            # If someone else paid, add only this user's portion
             for split in splits['splits']:
                 if split['email'] == current_user.id:
                     current_month_total += split['amount']
                     break
-    
-    # Calculate monthly totals for statistics
     monthly_totals = {}
     unique_cards = set()
-    
     currencies = Currency.query.all()
     for expense in expenses:
         month_key = expense.date.strftime('%Y-%m')
@@ -6595,36 +6568,41 @@ def transactions():
                 'by_card': {},
                 'contributors': {}
             }
-            
-        # Add to monthly totals
         monthly_totals[month_key]['total'] += expense.amount
-        
-        # Add card to total
         if expense.card_used not in monthly_totals[month_key]['by_card']:
             monthly_totals[month_key]['by_card'][expense.card_used] = 0
         monthly_totals[month_key]['by_card'][expense.card_used] += expense.amount
-        
-        # Track unique cards where current user paid
         if expense.paid_by == current_user.id:
             unique_cards.add(expense.card_used)
-        
-        # Add contributors' data
         splits = expense_splits[expense.id]
-        
-        # Add payer's portion
         if splits['payer']['amount'] > 0:
             user_id = splits['payer']['email']
             if user_id not in monthly_totals[month_key]['contributors']:
                 monthly_totals[month_key]['contributors'][user_id] = 0
             monthly_totals[month_key]['contributors'][user_id] += splits['payer']['amount']
-        
-        # Add other contributors' portions
         for split in splits['splits']:
             user_id = split['email']
             if user_id not in monthly_totals[month_key]['contributors']:
                 monthly_totals[month_key]['contributors'][user_id] = 0
             monthly_totals[month_key]['contributors'][user_id] += split['amount']
-    
+
+    # Prepare transactions for suspicious activity detection (convert to dicts)
+    tx_dicts = [
+        {
+            'amount': expense.amount,
+            'date': expense.date,
+            'description': expense.description,
+            'account_id': expense.account_id,
+            'id': expense.id
+        }
+        for expense in expenses
+    ]
+    # Optionally, build user_profile with recent descriptions
+    user_profile = {
+        'recent_descriptions': list({e.description.strip().lower() for e in expenses if e.description})
+    }
+    suspicious_alerts = detect_suspicious_activity(tx_dicts, user_profile=user_profile)
+
     return render_template('transactions.html', 
                         expenses=expenses,
                         expense_splits=expense_splits,
@@ -6634,7 +6612,37 @@ def transactions():
                         unique_cards=unique_cards,
                         users=users,
                         base_currency=base_currency,
-                        currencies=currencies)
+                        currencies=currencies,
+                        suspicious_alerts=suspicious_alerts)
+
+
+# New route to show suspicious activity alerts in detail
+@app.route('/suspicious-activity')
+@login_required_dev
+@demo_time_limited
+def suspicious_activity():
+    """Show suspicious activity alerts for the current user"""
+    expenses = Expense.query.filter(
+        or_(
+            Expense.user_id == current_user.id,
+            Expense.split_with.like(f'%{current_user.id}%')
+        )
+    ).order_by(Expense.date.desc()).all()
+    tx_dicts = [
+        {
+            'amount': expense.amount,
+            'date': expense.date,
+            'description': expense.description,
+            'account_id': expense.account_id,
+            'id': expense.id
+        }
+        for expense in expenses
+    ]
+    user_profile = {
+        'recent_descriptions': list({e.description.strip().lower() for e in expenses if e.description})
+    }
+    alerts = detect_suspicious_activity(tx_dicts, user_profile=user_profile)
+    return render_template('suspicious_activity.html', alerts=alerts)
 
 
 

@@ -21,3 +21,11 @@ jobs:
         context: .
         push: false
         tags: seng660team1/dollardollar:demo
+
+    - name: Archive Docker image
+      if: github.ref == 'refs/heads/fraud-detection'
+      uses: actions/upload-artifact@v4
+      with:
+        name: seng660team1-docker-image
+        path: ./seng660team1-docker-image.tar
+        retention-days: 7

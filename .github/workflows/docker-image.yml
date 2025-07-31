@@ -22,7 +22,7 @@ jobs:
         tags: seng660team1/dollardollar:demo
 
     - name: Save Docker image
-      run: docker save seng660team1/dollardollar:demo -o ./seng660team1-docker-image.tar
+      run: docker save -o ./seng660team1-docker-image.tar seng660team1/dollardollar:demo
 
     - name: Archive Docker image
       uses: actions/upload-artifact@v4

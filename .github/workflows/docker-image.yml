@@ -81,7 +81,7 @@ jobs:
         run: docker ps -a && docker volume ls
 
       - name: Spin Up Docker Containers
-        run: docker-compose up --build
+        run: docker compose up --build
 
       - name: ZAP Scan
         uses: zaproxy/action-baseline@v0.14.0

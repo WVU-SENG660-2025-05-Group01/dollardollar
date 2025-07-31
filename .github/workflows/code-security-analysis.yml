@@ -30,14 +30,14 @@ jobs:
         uses: actions/upload-artifact@v4  #refers to a GitHub Action that uploads the results of the CodeQL analysis
         with:
           name: CodeQL Python Results
-          path: ${{ runner.temp }}/results/python.sarif   #specifies the path to the SARIF file containing the analysis results
+          path: /home/runner/work/dollardollar/results/python.sarif   #specifies the path to the SARIF file containing the analysis results
           retention-days: 7
 
       - name: Upload CodeQL JavaScript results
         uses: actions/upload-artifact@v4   #refers to a GitHub Action that uploads the results of the CodeQL analysis
         with:
           name: CodeQL JavaScript Results
-          path: ${{ runner.temp }}/results/javascript.sarif   #specifies the path to the SARIF file containing the analysis results
+          path: /home/runner/work/dollardollar/results/javascript.sarif   #specifies the path to the SARIF file containing the analysis results
           retention-days: 7
 
   # dast_zap:

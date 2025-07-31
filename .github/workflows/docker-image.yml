@@ -38,8 +38,7 @@ jobs:
         retention-days: 7
 
 
-  code-security-analysis:
-
+  code-static-security-analysis:
     name: SAST - CodeQL         #static code analysis engine developed by GitHub
     runs-on: ubuntu-latest
     permissions:
@@ -73,6 +72,7 @@ jobs:
           retention-days: 7
 
 
+  code-dynamic-security-analysis:
     name: DAST - OWASP ZAP        
     runs-on: ubuntu-latest
     needs: build

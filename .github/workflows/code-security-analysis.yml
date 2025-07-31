@@ -3,13 +3,14 @@ name: Code Security Analysis
 on:
   workflow_run:
     workflows: ["Docker Image CI"]
-    branches: ["fraud-detection"]
     types:
       - completed
-  push:
-    branches: [ fraud-detection ]
-  pull_request:
-    branches: [ fraud-detection ]
+    branches:
+      - fraud-detection
+  # push:
+  #   branches: [ fraud-detection ]
+  # pull_request:
+  #   branches: [ fraud-detection ]
 
 
 jobs:

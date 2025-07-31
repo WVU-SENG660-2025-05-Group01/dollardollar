@@ -19,7 +19,7 @@ jobs:
       - name: Set up CodeQL
         uses: github/codeql-action/init@v3   #refers to a GitHub Action that initializes the CodeQL analysis process
         with:
-          languages: 'python, javascript'
+          languages: 'python, javascript, html'
 
       - name: Perform CodeQL analysis
         uses: github/codeql-action/analyze@v3   #refers to a GitHub Action that performs the CodeQL analysis
@@ -38,6 +38,13 @@ jobs:
         with:
           name: CodeQL JavaScript Results
           path: /home/runner/work/dollardollar/results/javascript.sarif   #specifies the path to the SARIF file containing the analysis results
+          retention-days: 7
+
+      - name: Upload CodeQL HTML results
+        uses: actions/upload-artifact@v4   #refers to a GitHub Action that uploads the results of the CodeQL analysis
+        with:
+          name: CodeQL HTML Results
+          path: /home/runner/work/dollardollar/results/html.sarif   #specifies the path to the SARIF file containing the analysis results
           retention-days: 7
 
   # dast_zap:

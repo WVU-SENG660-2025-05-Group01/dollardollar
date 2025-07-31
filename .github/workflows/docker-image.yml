@@ -21,8 +21,11 @@ jobs:
         push: false
         tags: seng660team1/dollardollar:demo
 
+    - name: Check for Image
+      run: docker image ls
+
     - name: Save Docker image
-      run: docker save -o ./seng660team1-docker-image.tar seng660team1/dollardollar:demo
+      run: docker save -o seng660team1-docker-image.tar seng660team1/dollardollar:demo
 
     - name: Archive Docker image
       uses: actions/upload-artifact@v4

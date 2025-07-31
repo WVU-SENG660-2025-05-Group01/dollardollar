@@ -2,7 +2,7 @@ name: Docker Image CI
 on:
   push:
     branches:
-      - "fraud-detection
+      - "fraud-detection"
 
 jobs:
   build:

@@ -1,0 +1,31 @@
+
+name: "Security Pipeline"
+
+on:
+  push:
+    branches: [ fraud-detection ]
+  pull_request:
+    branches: [ fraud-detection ]
+
+jobs:
+  sast_codeql:
+    name: SAST - CodeQL         #static code analysis engine developed by GitHub
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4   #tells the workflow to check out your repository’s code into the GitHub Actions runner
+      - uses: github/codeql-action/init@v3   #refers to a GitHub Action that initializes the CodeQL analysis process
+        with:
+          languages: 'python, javascript'
+      - uses: github/codeql-action/analyze@v3  #step in a GitHub Actions workflow that runs the CodeQL analysis and uploads the results to GitHub’s Security tab
+
+  dast_zap:
+    name: DAST - OWASP ZAP        
+    runs-on: ubuntu-latest
+    needs: sast_codeql
+    steps:
+      - name: Wait for App to Deploy (optional)
+        run: sleep 60
+      - name: ZAP Scan
+        uses: zaproxy/action-baseline@v0.10.0
+        with:
+          target: 'http://localhost:5006'

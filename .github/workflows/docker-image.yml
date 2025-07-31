@@ -15,15 +15,16 @@ jobs:
       uses: docker/setup-buildx-action@v2
             
     - name: Build main images
-      if: github.ref == 'refs/heads/fraud-detection'
       uses: docker/build-push-action@v4
       with:
         context: .
         push: false
         tags: seng660team1/dollardollar:demo
 
+    - name: Save Docker image
+      run: docker save seng660team1/dollardollar:demo -o ./seng660team1-docker-image.tar
+
     - name: Archive Docker image
-      if: github.ref == 'refs/heads/fraud-detection'
       uses: actions/upload-artifact@v4
       with:
         name: seng660team1-docker-image

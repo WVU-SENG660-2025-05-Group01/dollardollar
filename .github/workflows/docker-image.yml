@@ -6,7 +6,6 @@ on:
 
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
     
@@ -36,6 +35,29 @@ jobs:
         name: seng660team1-docker-image
         path: ./seng660team1-docker-image.tar
         retention-days: 7
+
+
+  spinup:
+    name: Run Docker Containers       
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4   #tells the workflow to check out your repository’s code into the GitHub Actions runner
+
+      - name: Download Docker image
+        uses: actions/download-artifact@v4
+        with:
+          name: seng660team1-docker-image
+          path: ${{ runner.temp}}
+
+      - name: Load Docker image
+        run: |
+          docker load --input ${{ runner.temp }}/seng660team1-docker-image.tar
+          docker image ls -a
+
+      - name: Spin Up Docker Containers
+        run: docker compose -f /home/runner/work/dollardollar/dollardollar/docker-compose.yml up
 
 
   code-static-security-analysis:
@@ -77,30 +99,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4   #tells the workflow to check out your repository’s code into the GitHub Actions runner
-
-      - name: Download Docker image
-        uses: actions/download-artifact@v4
-        with:
-          name: seng660team1-docker-image
-          path: ${{ runner.temp}}
-
-      - name: Load Docker image
-        run: |
-          docker load --input ${{ runner.temp }}/seng660team1-docker-image.tar
-          docker image ls -a
-
-      - name: Check docker containers and volumes
-        run: docker ps -a && docker volume ls
-
-      - name: Snoop in directory
-        run: ls -la /home/runner/work/dollardollar/dollardollar
-
-      - name: Spin Up Docker Containers
-        run: docker compose -f /home/runner/work/dollardollar/dollardollar/docker-compose.yml up
-
       - name: ZAP Scan
+        run: sleep 60
         uses: zaproxy/action-baseline@v0.14.0
         with:
           target: 'http://localhost:5006'

@@ -1,10 +1,16 @@
 name: Code Security Analysis
 
 on:
-  push:
-    branches: [ fraud-detection ]
-  pull_request:
-    branches: [ fraud-detection ]
+  workflow_run:
+    workflows: ["Docker Image CI"]
+    branches: ["fraud-detection"]
+    types:
+      - completed
+
+  # push:
+  #   branches: [ fraud-detection ]
+  # pull_request:
+  #   branches: [ fraud-detection ]
 
 jobs:
   sast_codeql:
@@ -44,7 +50,7 @@ jobs:
   dast_zap:
     name: DAST - OWASP ZAP        
     runs-on: ubuntu-latest
-    needs: [build, sast_codeql]  #ensures that this job runs after the build and SAST jobs have completed successfully
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Check docker containers and volumes
         run: docker ps -a && docker volume ls

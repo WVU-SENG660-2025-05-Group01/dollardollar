@@ -91,8 +91,11 @@ jobs:
       - name: Check docker containers and volumes
         run: docker ps -a && docker volume ls
 
+      - name: Snoop in directory
+        run: ls -la /home/runner/work/dollardollar
+
       - name: Spin Up Docker Containers
-        run: docker compose -f /home/runner/work/dollardollar/dollardollar/docker-compose.yml up
+        run: docker compose -f /home/runner/work/dollardollar/docker-compose.yml up
 
       - name: ZAP Scan
         uses: zaproxy/action-baseline@v0.14.0

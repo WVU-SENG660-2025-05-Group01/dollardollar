@@ -6,11 +6,11 @@ on:
     branches: ["fraud-detection"]
     types:
       - completed
+  push:
+    branches: [ fraud-detection ]
+  pull_request:
+    branches: [ fraud-detection ]
 
-  # push:
-  #   branches: [ fraud-detection ]
-  # pull_request:
-  #   branches: [ fraud-detection ]
 
 jobs:
   sast_codeql:

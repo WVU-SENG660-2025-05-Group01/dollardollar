@@ -1,5 +1,4 @@
-
-name: "Security Pipeline"
+name: Code Security Analysis
 
 on:
   push:
@@ -30,14 +29,13 @@ jobs:
       - name: Upload CodeQL results
         uses: github/codeql-action/upload-results@v4   #refers to a GitHub Action that uploads the results of the CodeQL analysis
         with:
-          name: CodeQL Python Results
-          path: ${{ runner.temp }}/results/python.sarif   #specifies the path to the SARIF file containing the analysis results
-          retention-days: 7
+          - name: CodeQL Python Results
+            path: ${{ runner.temp }}/results/python.sarif   #specifies the path to the SARIF file containing the analysis results
+            retention-days: 7
 
-        with:
-          name: CodeQL JavaScript Results
-          path: ${{ runner.temp }}/results/javascript.sarif   #specifies the path to the SARIF file containing the analysis results
-          retention-days: 7
+          - name: CodeQL JavaScript Results
+            path: ${{ runner.temp }}/results/javascript.sarif   #specifies the path to the SARIF file containing the analysis results
+            retention-days: 7
 
   # dast_zap:
   #   name: DAST - OWASP ZAP        

@@ -19,7 +19,7 @@ jobs:
       - name: Set up CodeQL
         uses: github/codeql-action/init@v3   #refers to a GitHub Action that initializes the CodeQL analysis process
         with:
-          languages: 'python, javascript, html'
+          languages: 'python, javascript, HTML'
 
       - name: Perform CodeQL analysis
         uses: github/codeql-action/analyze@v3   #refers to a GitHub Action that performs the CodeQL analysis

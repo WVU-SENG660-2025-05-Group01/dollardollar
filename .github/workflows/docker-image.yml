@@ -18,7 +18,8 @@ jobs:
       uses: docker/build-push-action@v4
       with:
         context: .
-        push: true
+        push: false
+        load: true
         tags: seng660team1/dollardollar:demo
 
     - name: Check for Image

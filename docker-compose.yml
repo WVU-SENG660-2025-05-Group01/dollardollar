@@ -2,7 +2,7 @@ version: '3'
 
 services:
   app:
-    image: harung43/dollardollar:latest
+    image: seng660team1/dollardollar:demo
     platform: linux/amd64
     ports:
       - "127.0.0.1:5006:5001"

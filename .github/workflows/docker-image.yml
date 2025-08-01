@@ -80,7 +80,7 @@ jobs:
         uses: actions/checkout@v4   #tells the workflow to check out your repository’s code into the GitHub Actions runner
 
       - name: Wipe Docker clean
-        run: docker system prune -a --volumes   #cleans up unused Docker images, containers, networks, and volumes to free up space
+        run: docker system prune -a --volumes --force #cleans up unused Docker images, containers, networks, and volumes to free up space
 
       - name: Download Docker image
         uses: actions/download-artifact@v4

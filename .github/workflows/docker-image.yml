@@ -76,6 +76,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       security-events: write
+      issues: write
     needs: build
     steps:
       - name: Checkout code

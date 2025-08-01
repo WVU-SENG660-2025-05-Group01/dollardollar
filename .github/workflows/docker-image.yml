@@ -105,7 +105,7 @@ jobs:
       - name: ZAP Scan
         uses: zaproxy/action-baseline@v0.14.0
         with:
-          target: 'http://localhost:5006'
+          target: 'http://127.0.0.1:5006'
 
       - name: Kill Docker containers
         run: docker compose -f /home/runner/work/dollardollar/dollardollar/docker-compose.yml down

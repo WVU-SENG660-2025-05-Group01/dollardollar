@@ -5,12 +5,12 @@ services:
     image: seng660team1/dollardollar:demo
     platform: linux/amd64
     ports:
-      - "127.0.0.1:5006:5001"
+      - "5006:5001"
     environment:
       - SQLALCHEMY_DATABASE_URI=postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
-      - DEVELOPMENT_MODE=True
+      - DEVELOPMENT_MODE=False
       - DISABLE_SIGNUPS=${DISABLE_SIGNUPS:-False}
-      - DEBUG=${DEBUG:-True}
+      - DEBUG=${DEBUG:-False}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - FLASK_APP=app.py
       - SECRET_KEY=${SECRET_KEY}

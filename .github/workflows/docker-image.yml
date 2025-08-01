@@ -79,6 +79,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4   #tells the workflow to check out your repository’s code into the GitHub Actions runner
 
+      - name: Wipe Docker clean
+        run: docker system prune -a --volumes   #cleans up unused Docker images, containers, networks, and volumes to free up space
+
       - name: Download Docker image
         uses: actions/download-artifact@v4
         with:
@@ -94,7 +97,10 @@ jobs:
         run: docker compose -f /home/runner/work/dollardollar/dollardollar/docker-compose.yml up --detach
 
       - name: Wait for app to start
-        run: sleep 60   #waits for 60 seconds to ensure that the application is fully started before running the ZAP scan 
+        run: sleep 30   #waits for 60 seconds to ensure that the application is fully started before running the ZAP scan 
+
+      - name: Check if app is running
+        run: netstat -tuln
 
       - name: ZAP Scan
         uses: zaproxy/action-baseline@v0.14.0

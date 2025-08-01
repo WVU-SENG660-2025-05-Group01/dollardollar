@@ -96,8 +96,8 @@ jobs:
       - name: Spin Up Docker Containers
         run: docker compose -f /home/runner/work/dollardollar/dollardollar/docker-compose.yml up --detach
 
-      # - name: Wait for app to start
-      #   run: sleep 30   #waits for 60 seconds to ensure that the application is fully started before running the ZAP scan 
+      - name: Wait for app to start
+        run: sleep 10   #waits for 60 seconds to ensure that the application is fully started before running the ZAP scan 
 
       - name: Check if app is running
         run: netstat -tuln\

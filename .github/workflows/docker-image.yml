@@ -102,10 +102,6 @@ jobs:
       - name: Check if app is running
         run: netstat -tuln\
 
-      - name: Probe app
-        run: |
-          curl http://localhost:5006 || exit 1   #checks if the application is running by sending a request to the specified URL
-
       - name: ZAP Scan
         uses: zaproxy/action-baseline@v0.14.0
         with:

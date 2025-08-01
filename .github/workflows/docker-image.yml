@@ -91,7 +91,7 @@ jobs:
           docker image ls -a
 
       - name: Spin Up Docker Containers
-        run: docker compose -f /home/runner/work/dollardollar/dollardollar/docker-compose.yml up &
+        run: docker compose -f /home/runner/work/dollardollar/dollardollar/docker-compose.yml up --detach
 
       - name: Wait for app to start
         run: sleep 60   #waits for 60 seconds to ensure that the application is fully started before running the ZAP scan 
